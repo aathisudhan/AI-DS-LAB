@@ -1,0 +1,38 @@
+import pandas as pd
+
+def find_s_algorithm(file_path, target_column):
+    if file_path.endswith(".csv"):
+        data = pd.read_csv(file_path)
+    elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+        data = pd.read_excel(file_path)
+    else:
+        raise ValueError("Unsupported file format. Use CSV or Excel file.")
+    
+    positive_examples = data[data[target_column] == "Yes"].reset_index(drop=True)
+    
+    hypothesis = ['?' for _ in range(len(data.columns) - 1)]
+    
+    for i, row in positive_examples.iterrows():
+        for j in range(len(hypothesis)):
+            if hypothesis[j] == '?':
+                hypothesis[j] = row.iloc[j]
+
+    print("\nInitial Hypothesis:", hypothesis)
+
+    for i, row in positive_examples.iterrows():
+        print(f"\nRechecking positive example {i + 1}: {row[:-1].values}")
+        
+        for j in range(len(hypothesis)):
+            if hypothesis[j] != row.iloc[j]:
+                hypothesis[j] = '?'
+        
+        print("Updated Hypothesis after rechecking:", hypothesis)
+    
+    return hypothesis
+
+file_path = "FindS.xlsx"
+target_column = "EnjoySport"
+
+final_hypothesis = find_s_algorithm(file_path, target_column)
+
+print("\nFinal Hypothesis:", final_hypothesis)
