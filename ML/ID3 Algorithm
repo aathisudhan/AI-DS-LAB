@@ -1,0 +1,96 @@
+import numpy as np
+import pandas as pd
+import math
+
+def read_data(file_path):
+    if file_path.endswith(".csv"):
+        data = pd.read_csv(file_path)
+    elif file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+        data = pd.read_excel(file_path)
+    else:
+        raise ValueError("Unsupported file format. Use CSV or Excel file.")
+
+    metadata = list(data.columns)
+    traindata = data.values
+    return metadata, traindata
+
+class Node:
+    def __init__(self, attribute):
+        self.attribute = attribute
+        self.children = []
+        self.answer = None
+
+def subtables(data, column, delete_column=False):
+    unique_values = np.unique(data[:, column])
+    subsets = {}
+
+    for value in unique_values:
+        subset = data[data[:, column] == value]
+        if delete_column:
+            subset = np.delete(subset, column, axis=1)
+        subsets[value] = subset
+
+    return unique_values, subsets
+
+def calculate_entropy(column):
+    unique_classes, counts = np.unique(column, return_counts=True)
+    probabilities = counts / len(column)
+    return -np.sum(probabilities * np.log2(probabilities))
+
+def gain_ratio(data, column):
+    total_entropy = calculate_entropy(data[:, -1])
+    unique_values, subsets = subtables(data, column)
+
+    weighted_entropy = 0
+    split_info = 0
+
+    for value in unique_values:
+        subset = subsets[value]
+        weight = len(subset) / len(data)
+        weighted_entropy += weight * calculate_entropy(subset[:, -1])
+        split_info -= weight * np.log2(weight)
+
+    information_gain = total_entropy - weighted_entropy
+    if split_info == 0:
+        return 0
+    return information_gain / split_info
+
+def create_node(data, metadata):
+    if len(np.unique(data[:, -1])) == 1:
+        leaf_node = Node(None)
+        leaf_node.answer = data[0, -1]
+        return leaf_node
+
+    gain_ratios = [gain_ratio(data, i) for i in range(data.shape[1] - 1)]
+    best_attribute_index = np.argmax(gain_ratios)
+
+    root = Node(metadata[best_attribute_index])
+    metadata = metadata[:best_attribute_index] + metadata[best_attribute_index + 1:]
+
+    unique_values, subsets = subtables(data, best_attribute_index, delete_column=True)
+    for value in unique_values:
+        child_node = create_node(subsets[value], metadata)
+        root.children.append((value, child_node))
+
+    return root
+
+def print_tree(node, level=0):
+    indent = " " * level * 4
+    if node.answer is not None:
+        print(f"{indent}--> {node.answer}")
+    else:
+        print(f"{indent}{node.attribute}")
+        for value, child in node.children:
+            print(f"{indent}  {value}")
+            print_tree(child, level + 1)
+
+def main():
+    file_path = "ID3.xlsx"
+    metadata, traindata = read_data(file_path)
+    data = np.array(traindata)
+    root = create_node(data, metadata)
+    print("\nDecision Tree:")
+    print_tree(root)
+
+if __name__ == "__main__":
+    main()
