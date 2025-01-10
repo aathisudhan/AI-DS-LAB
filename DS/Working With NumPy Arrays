@@ -1,0 +1,224 @@
+# Program 1: Creating Empty, Full, Zeros, and Ones Arrays
+# Built-in functions used:
+# - np.empty: Creates an uninitialized array with random garbage values.
+# - np.full: Creates an array filled with a specified value.
+# - np.zeros: Creates an array with all elements initialized to 0.
+# - np.ones: Creates an array with all elements initialized to 1.
+
+import numpy as np
+
+# Create an empty array with a specified shape
+empty_array = np.empty((3, 3))
+print("Empty Array:")
+print(empty_array)
+
+# Create a full array with a specified shape and fill value
+full_array = np.full((3, 3), 777)
+print("\nFull Array:")
+print(full_array)
+
+# Create an array of zeros with a specified shape
+zeros_array = np.zeros((3, 3))
+print("\nArray of Zeros:")
+print(zeros_array)
+
+# Create an array of ones with a specified shape
+ones_array = np.ones((3, 3))
+print("\nArray of Ones:")
+print(ones_array)
+
+#_____________________________________________________________________
+
+# Program 2: Filtering Rows with Numeric Values Only
+# Built-in functions used:
+# - np.array: Creates an array.
+# - try-except: Handles conversion errors for checking numeric values.
+
+import numpy as np
+
+# Initialize a NumPy array with numeric and non-numeric values
+data = np.array([
+    [1, 6, 10],
+    [2, 'banana', 11],
+    ['apple', 8, 12],
+    [4, 9, 'orange'],
+    [5, 'grape', 14],
+])
+
+# Print the original array
+print("Original Array:")
+print(data)
+
+# Function to check if a row contains only numeric values
+def is_numeric_row(row):
+    try:
+        # Attempt to convert all elements in the row to float
+        [float(value) for value in row]
+        return True
+    except ValueError:
+        return False
+
+# Filter the rows to retain only those that are numeric
+filtered_data = np.array([row for row in data if is_numeric_row(row)])
+
+# Print the filtered array
+print("\nFiltered Array (Rows with only numeric values):")
+print(filtered_data)
+
+#_____________________________________________________________________
+
+# Program 3: Generating a Grid of All Combinations
+# Built-in functions used:
+# - np.meshgrid: Generates coordinate matrices.
+# - np.array: Creates an array.
+
+import numpy as np
+
+# Step 1: Initialize two NumPy arrays
+array1 = np.array([1, 2])
+array2 = np.array([3, 4])
+
+# Step 2: Generate a grid of all combinations using np.meshgrid
+grid1, grid2 = np.meshgrid(array1, array2)
+
+# Step 3: Combine the two grids and reshape to get pairs
+combinations = np.array([grid1.flatten(), grid2.flatten()]).T
+
+# Step 4: Print the arrays and combinations
+print("Array 1:")
+print(array1)
+
+print("\nArray 2:")
+print(array2)
+
+print("\nCombined Array (All combinations):")
+print(combinations)
+
+#_____________________________________________________________________
+
+# Program 4: Adding a Border Around a 2D Array
+# Built-in functions used:
+# - np.pad: Adds padding to an array.
+
+import numpy as np
+
+# Step 1: Initialize the NumPy array
+array = np.array([[2, 3],
+                  [3, 4]])
+
+# Step 2: Define the border value
+border_value = 0
+
+# Step 3: Add a border around the array using np.pad()
+bordered_array = np.pad(array, pad_width=1, mode='constant', constant_values=border_value)
+
+# Step 4: Print the original and bordered arrays
+print("Original array:")
+print(array)
+
+print("\nArray with border:")
+print(bordered_array)
+
+#_____________________________________________________________________
+
+# Program 5: Matrix Operations (Addition, Subtraction, Multiplication)
+# Built-in functions used:
+# - np.add, np.subtract: Perform element-wise addition and subtraction.
+# - np.multiply: Performs element-wise multiplication.
+# - np.dot or `@`: Performs matrix multiplication.
+
+import numpy as np
+
+# Define matrices A and B
+A = np.array([[1, 2],
+              [4, 5]])
+
+B = np.array([[7, 8],
+              [9, 10]])
+
+# Perform operations
+add_result = A + B
+sub_result = A - B
+elementwise_mul = A * B
+matrix_mul = A @ B
+
+# Print results
+print("Matrix A:")
+print(A)
+
+print("\nMatrix B:")
+print(B)
+
+print("\nMatrix Addition (A + B):")
+print(add_result)
+
+print("\nMatrix Subtraction (A - B):")
+print(sub_result)
+
+print("\nElement-wise Multiplication (A * B):")
+print(elementwise_mul)
+
+print("\nMatrix Multiplication (A @ B):")
+print(matrix_mul)
+
+#_____________________________________________________________________
+
+# Program 6: Analyzing a Student Performance Matrix
+# Built-in functions used:
+# - np.add, np.subtract: Perform element-wise operations.
+# - np.sum, np.mean, np.max, np.min: Aggregate functions.
+
+import numpy as np
+
+# Initialize a 2D NumPy array representing students' scores across subjects
+scores = np.array([
+    [85, 90, 88],  # Student 1: Math, Science, English
+    [78, 85, 80],  # Student 2: Math, Science, English
+    [92, 91, 94],  # Student 3: Math, Science, English
+    [70, 75, 72]   # Student 4: Math, Science, English
+])
+
+# Display the initial Student Performance Matrix
+print("Student Performance Matrix:")
+print(scores)
+
+# Comparison of two students (e.g., Student 1 and Student 2)
+student1 = scores[0]
+student2 = scores[1]
+added_scores = np.add(student1, student2)
+subtracted_scores = np.subtract(student1, student2)
+print("\nComparison of Student 1 and Student 2:")
+print(f"Student 1 + Student 2 scores: {added_scores}")
+print(f"Student 1 - Student 2 scores: {subtracted_scores}")
+
+# Total and average scores for each student
+total_scores_students = np.sum(scores, axis=1)
+average_scores_students = np.mean(scores, axis=1)
+print("\nTotal and Average Scores for Each Student:")
+for i, (total, avg) in enumerate(zip(total_scores_students, average_scores_students), start=1):
+    print(f"Student {i} - Total Score: {total}, Average Score: {avg:.2f}")
+
+# Highest and lowest scores in the matrix
+highest_score = np.max(scores)
+lowest_score = np.min(scores)
+print("\nHighest and Lowest Scores in the Matrix:")
+print(f"Highest score: {highest_score}")
+print(f"Lowest score: {lowest_score}")
+
+# Average scores for each subject
+average_scores_subjects = np.mean(scores, axis=0)
+print("\nAverage Scores for Each Subject:")
+subjects = ["Math", "Science", "English"]
+for subject, avg in zip(subjects, average_scores_subjects):
+    print(f"{subject} - Average Score: {avg:.2f}")
+
+# Transpose the matrix (subjects as rows, students as columns)
+transposed_matrix = np.transpose(scores)
+print("\nTransposed Performance Matrix (Subjects as rows, Students as columns):")
+print(transposed_matrix)
+
+# Total scores for each subject
+total_scores_subjects = np.sum(scores, axis=0)
+print("\nTotal Scores for Each Subject:")
+for subject, total in zip(subjects, total_scores_subjects):
+    print(f"{subject} - Total Score: {total}")
