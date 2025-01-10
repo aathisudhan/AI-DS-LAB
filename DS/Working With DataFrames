@@ -1,0 +1,121 @@
+import pandas as pd
+
+# Program 1: Create DataFrame with user input
+# Built-in functions used:
+# - input(): To take input from the user.
+# - append(): To add items to lists.
+# - pd.DataFrame(): To create a DataFrame from a dictionary.
+
+# Initialize empty lists
+names = []
+ages = []
+cities = []
+index_labels = []
+
+# Input the number of records
+n = int(input("\nEnter the number of records you want to add: "))
+
+# Collect user inputs
+for i in range(n):
+    print(f"\nRecord {i + 1}:")
+    name = input("Enter Name: ")
+    age = int(input("Enter Age: "))
+    city = input("Enter City: ")
+    index_label = input("Enter Index Label: ")
+
+    # Append to respective lists
+    names.append(name)
+    ages.append(age)
+    cities.append(city)
+    index_labels.append(index_label)
+
+# Create a dictionary for the DataFrame
+data = {
+    "Name": names,
+    "Age": ages,
+    "City": cities
+}
+
+# Create the DataFrame
+df = pd.DataFrame(data, index=index_labels)
+
+# Display the DataFrame
+print("\nDisplaying DataFrame:")
+print(df)
+
+#_________________________________________________________________________________
+
+# Program 2: Create DataFrame with predefined data and custom index labels
+# Built-in functions used:
+# - pd.DataFrame(): To create a DataFrame from a dictionary with custom index labels.
+
+# Define the data dictionary
+data = {
+    "Name": ["Alice", "Bob", "Charlie", "David"],
+    "Age": [25, 30, 35, 40],
+    "City": ["New York", "Los Angeles", "Chicago", "Houston"]
+}
+
+# Define custom index labels
+index_labels = ["A", "B", "C", "D"]
+
+# Create the DataFrame
+df = pd.DataFrame(data, index=index_labels)
+
+# Display the DataFrame
+print("\nDisplaying DataFrame:")
+print(df)
+
+#_________________________________________________________________________________
+
+# Program 3: Retrieve first 3 rows of a DataFrame
+# Built-in functions used:
+# - pd.DataFrame(): To create a DataFrame.
+# - head(): To retrieve the first n rows of a DataFrame.
+
+# Define the data dictionary
+data = {
+    "Name": ["Tom", "Jack", "Lucy", "Bob", "Jerry", "Alice", "Thomas", "Barbie"],
+    "Marks": [9, 19, 20, 17, 11, 18, 5, 8],
+    "Status": ["Fail", "Pass", "Pass", "Pass", "Pass", "Pass", "Fail", "Fail"]
+}
+
+# Create the DataFrame
+df = pd.DataFrame(data)
+
+# Retrieve the first 3 rows
+first_three_rows = df.head(3)
+
+# Display the original DataFrame
+print("\nOriginal DataFrame:")
+print(df)
+
+# Display the first 3 rows
+print("\nFirst 3 rows of the DataFrame:")
+print(first_three_rows)
+
+#_________________________________________________________________________________
+
+# Program 4: Calculate average age from a DataFrame
+# Built-in functions used:
+# - pd.DataFrame(): To create a DataFrame.
+# - mean(): To calculate the mean of numeric values in a DataFrame column.
+
+# Define the data dictionary
+data = {
+    "Name": ["Alice", "Bob", "Charlie", "David", "Eva"],
+    "Age": [25, 30, 35, 40, 22]
+}
+
+# Create the DataFrame
+df = pd.DataFrame(data)
+
+# Calculate the average age
+average_age = df["Age"].mean()
+
+# Display the DataFrame
+print("Data:")
+print(df)
+
+# Display the average age
+print(f"\nThe average age is: {average_age:.2f}")
