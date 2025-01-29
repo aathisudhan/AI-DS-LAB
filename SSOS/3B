@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#define MAX_SYMBOLS 100
+#define MAX_CODE_LINES 100
+typedef struct {
+char label[10];
+int address;
+} Symbol;
+typedef struct {
+int address;
+char instruction[10];
+char operand1[10];
+char operand2[10];
+} CodeLine;
+void pass1(CodeLine code[], int codeCount, Symbol symbolTable[], int
+*symbolCount) {
+int address = 100; // Starting address
+int i; // Declare variable outside loop
+for (i = 0; i < codeCount; i++) {
+if (strcmp(code[i].instruction, "START") == 0) {
+address = atoi(code[i].operand1);
+} else if (strcmp(code[i].instruction, "END") != 0) {
+if (strlen(code[i].operand1) > 0 && !isdigit(code[i].operand1[0])) {
+strcpy(symbolTable[*symbolCount].label, code[i].operand1);
+symbolTable[*symbolCount].address = address;
+(*symbolCount)++;
+}
+if (strlen(code[i].operand2) > 0 && !isdigit(code[i].operand2[0])) {
+strcpy(symbolTable[*symbolCount].label, code[i].operand2);
+symbolTable[*symbolCount].address = address + 1;
+(*symbolCount)++;
+}
+address++;
+}
+}
+}
+int getAddress(Symbol symbolTable[], int symbolCount, char *label) {
+int i; // Declare variable outside loop
+for (i = 0; i < symbolCount; i++) {
+if (strcmp(symbolTable[i].label, label) == 0) {
+return symbolTable[i].address;
+}
+}
+return -1;
+}
+void pass2(CodeLine code[], int codeCount, Symbol symbolTable[], int
+symbolCount) {
+int address = 100; // Starting address
+int i; // Declare variable outside loop
+for (i = 0; i < codeCount; i++) {
+if (strcmp(code[i].instruction, "START") == 0) {
+address = atoi(code[i].operand1);
+} else if (strcmp(code[i].instruction, "END") != 0) {
+printf("%d: ", address);
+if (strcmp(code[i].instruction, "MOV") == 0) {
+printf("01 %d %s\n", getAddress(symbolTable, symbolCount, code
+[i].operand1), code[i].operand2);
+} else if (strcmp(code[i].instruction, "ADD") == 0) {
+printf("02 %d %d\n", getAddress(symbolTable, symbolCount, code
+[i].operand1), getAddress(symbolTable, symbolCount, code[i].operand2));
+} else if (strcmp(code[i].instruction, "STORE") == 0) {
+printf("03 %d\n", getAddress(symbolTable, symbolCount, code
+[i].operand1));
+}
+address++;
+}
+}
+}
+int main() {
+CodeLine code[MAX_CODE_LINES] = {
+{100, "START", "100", ""},
+{101, "MOV", "A", "5"},
+{102, "ADD", "A", "B"},
+{103, "STORE", "C", ""},
+{104, "END", "", ""}
+};
+Symbol symbolTable[MAX_SYMBOLS];
+int symbolCount = 0;
+pass1(code, 5, symbolTable, &symbolCount);
+printf("Pass 1: Symbol Table\n");
+int i; // Declare variable outside loop
+for (i = 0; i < symbolCount; i++) {
+printf("%s: %d\n", symbolTable[i].label, symbolTable[i].address);
+}
+printf("\nPass 2: Machine Code\n");
+pass2(code, 5, symbolTable, symbolCount);
+return 0;
+}
