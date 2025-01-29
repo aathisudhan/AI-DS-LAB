@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX_LINES 100
+#define MAX_LENGTH 100
+typedef struct {
+char macroName[20];
+int startIndex;
+int endIndex;
+} MacroTable;
+MacroTable MNT[10]; // Macro Name Table
+char MDT[500][MAX_LENGTH]; // Macro Definition Table
+int mntCount = 0, mdtCount = 0;
+// Add a macro to the Macro Name Table
+void addToMNT(char *macroName, int startIndex) {
+strcpy(MNT[mntCount].macroName, macroName);
+MNT[mntCount].startIndex = startIndex;
+mntCount++;
+}
+// Get parameter value
+void replaceParameter(char *line, char *param, char *value) {
+char *pos = strstr(line, param);
+while (pos) {
+char temp[MAX_LENGTH];
+strcpy(temp, pos + strlen(param));
+*pos = '\0';
+strcat(line, value);
+strcat(line, temp);
+pos = strstr(line, param);
+}
+}
+// Pass 1: Define macros and populate MDT and MNT
+void pass1(char inputFile[]) {
+FILE *input = fopen(inputFile, "r");
+char line[MAX_LENGTH];
+int insideMacro = 0;
+char macroName[20];
+if (!input) {
+printf("Error: Unable to open input file.\n");
+return;
+}
+while (fgets(line, sizeof(line), input)) {
+line[strcspn(line, "\n")] = '\0'; // Remove newline character
+if (strstr(line, "MACRO")) {
+insideMacro = 1;
+sscanf(line, "%*s %s", macroName);
+addToMNT(macroName, mdtCount);
+} else if (insideMacro) {
+if (strstr(line, "MEND")) {
+insideMacro = 0;
+strcpy(MDT[mdtCount++], line);
+MNT[mntCount - 1].endIndex = mdtCount - 1;
+} else {
+strcpy(MDT[mdtCount++], line);
+}
+}
+}
+fclose(input);
+}
+// Pass 2: Expand macros in the source code
+void pass2(char inputFile[], char outputFile[]) {
+FILE *input = fopen(inputFile, "r");
+FILE *output = fopen(outputFile, "w");
+char line[MAX_LENGTH];
+if (!input || !output) {
+printf("Error: Unable to open file(s).\n");
+return;
+}
+while (fgets(line, sizeof(line), input)) {
+line[strcspn(line, "\n")] = '\0'; // Remove newline character
+if (strstr(line, "MACRO") || strstr(line, "MEND")) {
+continue; // Skip macro definitions in Pass 2
+}
+int expanded = 0;
+for (int i = 0; i < mntCount; i++) {
+if (strstr(line, MNT[i].macroName)) {
+char param[MAX_LENGTH], value[MAX_LENGTH];
+sscanf(line, "%*s %s", param);
+int start = MNT[i].startIndex;
+int end = MNT[i].endIndex;
+for (int j = start; j <= end; j++) {
+if (strstr(MDT[j], "IF") || strstr(MDT[j], "ELSE") || strstr(MDT[j], "ENDIF")) {
+char processedLine[MAX_LENGTH];
+strcpy(processedLine, MDT[j]);
+replaceParameter(processedLine, "&FLAG", param);
+if (strstr(processedLine, "IF")) {
+int flag = atoi(param);
+if (flag == 1 && strstr(processedLine, "== 1")) {
+fprintf(output, "PRINT \"Flag is ON\"\n");
+}
+} else if (strstr(processedLine, "ELSE")) {
+int flag = atoi(param);
+if (flag == 0) {
+fprintf(output, "PRINT \"Flag is OFF\"\n");
+}
+}
+} else {
+fprintf(output, "%s\n", MDT[j]);
+}
+}
+expanded = 1;
+break;
+}
+}
+if (!expanded) {
+fprintf(output, "%s\n", line);
+}
+}
+fclose(input);
+fclose(output);
+}
+int main() {
+char inputFile[100] = "input.dat";
+char outputFile[100] = "output.dat";
+printf("Processing Pass 1...\n");
+pass1(inputFile);
+printf("Processing Pass 2...\n");
+pass2(inputFile, outputFile);
+printf("Macro Processing Complete.\nOutput written to %s\n", outputFile);
+return 0;
+}
