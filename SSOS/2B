@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX_SYMBOLS 10
+#define MAX_CODES 10
+struct Symbol
+{
+char label[10];
+int address;
+};
+struct MachineCode
+{
+int address;
+char code[20];
+};
+struct Symbol symbolTable[MAX_SYMBOLS];
+struct MachineCode machineCode[MAX_CODES];
+int symbolCount = 0;
+int codeCount = 0;
+// Add a symbol to the symbol table
+void addSymbol(char *label, int address)
+{
+strcpy(symbolTable[symbolCount].label, label);
+symbolTable[symbolCount].address = address;
+symbolCount++;
+}
+// Find a symbol's address in the table
+int findSymbol(char *label) {
+int i;
+for (i = 0; i < symbolCount; i++) {
+if (strcmp(symbolTable[i].label, label) == 0)
+return symbolTable[i].address;
+}
+return -1; // Not found
+}
+// Add machine code to the list
+void addMachineCode(int address, char *code) {
+machineCode[codeCount].address = address;
+strcpy(machineCode[codeCount].code, code);
+codeCount++;
+}
+int main() {
+int currentAddress = 100; // Starting address
+char line[50], opcode[10], op1[10], op2[10];
+printf("Enter assembly code (END to finish):\n");
+while (1) {
+gets(line); // Use gets() for Turbo C compatibility
+// Stop if END is found
+if (strstr(line, "END") != NULL)
+break;
+op1[0] = '\0'; // Clear op1 and op2
+op2[0] = '\0';
+sscanf(line, "%s %s %s", opcode, op1, op2);
+if (strcmp(opcode, "MOV") == 0) {
+int addr = findSymbol(op1);
+if (addr == -1) { // Add to symbol table if not found
+addr = currentAddress + 1;
+addSymbol(op1, addr);
+}
+char code[20];
+sprintf(code, "01 %d %s", addr, op2); // MOV opcode is 01
+addMachineCode(currentAddress, code);
+currentAddress++;
+} else if (strcmp(opcode, "ADD") == 0) {
+int addr = findSymbol(op1);
+if (addr == -1) { // Add to symbol table if not found
+addr = currentAddress + 1;
+addSymbol(op1, addr);
+}
+char code[20];
+sprintf(code, "02 %d %s", addr, op2); // ADD opcode is 02
+addMachineCode(currentAddress, code);
+currentAddress++;
+} else if (strcmp(opcode, "STORE") == 0) {
+int addr = findSymbol(op1);
+if (addr == -1) { // Add to symbol table if not found
+addr = currentAddress + 1;
+addSymbol(op1, addr);
+}
+char code[20];
+sprintf(code, "03 %d", addr); // STORE opcode is 03
+addMachineCode(currentAddress, code);
+currentAddress++;
+}
+}
+// Print Symbol Table
+printf("\nSymbol Table:\n");
+for (int i = 0; i < symbolCount; i++) {
+printf("%s: %d\n", symbolTable[i].label, symbolTable[i].address);
+}
+// Print Machine Code
+printf("\nMachine Code:\n");
+for (int i = 0; i < codeCount; i++) {
+printf("%d: %s\n", machineCode[i].address, machineCode[i].code);
+}
+return 0;
+}
