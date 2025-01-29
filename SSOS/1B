@@ -1,0 +1,12 @@
+#include <stdio.h>
+int main()
+{
+unsigned char num1 = 0x12; // First 8-bit number
+unsigned char num2 = 0x34; // Second 8-bit number
+unsigned char result;
+clrscr();
+result = num1 + num2;
+printf("Result: 0x%02X\n", result); // Print result in hexadecimal
+getch();
+return 0;
+}
