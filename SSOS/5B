@@ -1,0 +1,96 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Function to extract the hexadecimal value and convert it to an integer
+int hexToInt(const char *hexStr) {
+    return (int)strtol(hexStr, NULL, 16);
+}
+
+// Function to parse the header record
+void parseHeader(char *headerRecord, char *programName, int *startAddress, int *length) {
+    char *token = strtok(headerRecord, "^");
+    strcpy(programName, token);  // Extract program name
+
+    token = strtok(NULL, "^");
+    *startAddress = hexToInt(token);  // Extract starting address
+
+    token = strtok(NULL, "^");
+    *length = hexToInt(token);  // Extract length
+}
+
+// Function to parse a text record and update the memory map
+void parseText(char *textRecord, char memoryMap[][2][20], int *mapSize) {
+    char *token = strtok(textRecord, "^");
+    int address = hexToInt(token);  // Extract address
+
+    token = strtok(NULL, "^");
+    int length = hexToInt(token);  // Extract length
+
+    token = strtok(NULL, "^");  // Extract object code
+
+    for (int i = 0; i < length; i += 3) {
+        // Extract object code (up to 6 hex characters)
+        snprintf(memoryMap[*mapSize][0], 20, "%06X", address + i);  // Address
+        strncpy(memoryMap[*mapSize][1], token + (i * 2), 6);  // Object code
+        memoryMap[*mapSize][1][6] = '\0';  // Ensure null termination
+
+        (*mapSize)++;
+    }
+}
+
+// Function to display the memory map
+void displayMemoryMap(char memoryMap[][2][20], int mapSize) {
+    printf("\nMemory Map (Simplified)\n");
+    printf("Address\t\tObject Code\n");
+    for (int i = 0; i < mapSize; ++i) {
+        printf("%s\t\t%s\n", memoryMap[i][0], memoryMap[i][1]);
+    }
+}
+
+// Function to calculate the total memory utilized
+int calculateMemoryUtilized(int programLength) {
+    return programLength;  // The total memory utilized is simply the length of the program
+}
+
+int main() {
+    // Input data in the format specified
+    char input[] = "H^PROG1^001000^00105C "
+                   "T^001000^1E^1410332810303C0003 "
+                   "T^00101E^0C^001036481039 "
+                   "T^00102A^18^12103C4C0000 "
+                   "E^001000";
+
+    char programName[20], memoryMap[100][2][20];  // Memory map stores address and object code
+    int startAddress = 0, length = 0, mapSize = 0, execAddress = 0;
+
+    // Parse the input records
+    char *record = strtok(input, " ");
+    while (record != NULL) {
+        if (record[0] == 'H') {
+            // Header record
+            parseHeader(record + 2, programName, &startAddress, &length);
+        } else if (record[0] == 'T') {
+            // Text record
+            parseText(record + 2, memoryMap, &mapSize);
+        } else if (record[0] == 'E') {
+            // Execution start address
+            execAddress = hexToInt(record + 2);
+        }
+        record = strtok(NULL, " ");
+    }
+
+    // Display memory map
+    displayMemoryMap(memoryMap, mapSize);
+
+    // Display execution start address
+    printf("\nExecution Start Address:\n");
+    printf("%06X\n", execAddress);
+
+    // Calculate and display total memory utilized
+    int totalMemory = calculateMemoryUtilized(length);
+    printf("\nTotal Memory Utilized:\n");
+    printf("%d bytes\n", totalMemory);
+
+    return 0;
+}
