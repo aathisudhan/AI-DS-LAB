@@ -1,0 +1,48 @@
+import numpy as np
+import pandas as pd
+from pgmpy.models import BayesianModel
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+
+# 1. Define the Bayesian network structure
+# 'Fever', 'Cough', 'Difficulty_Breathing', and 'Contact_with_Confirmed' all influence 'Test_Result'
+model = BayesianModel([('Fever', 'Test_Result'),
+                       ('Cough', 'Test_Result'),
+                       ('Difficulty_Breathing', 'Test_Result'),
+                       ('Contact_with_Confirmed', 'Test_Result')])
+
+# 2. Create a pandas DataFrame from the input data
+data = pd.DataFrame({
+    'Fever': ['Yes', 'Yes', 'No', 'Yes', 'No', 'No', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'Yes'],
+    'Cough': ['Yes', 'No', 'Yes', 'Yes', 'Yes', 'No', 'No', 'No', 'No', 'Yes', 'Yes', 'Yes', 'Yes'],
+    'Difficulty_Breathing': ['Yes', 'Yes', 'No', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes'],
+    'Contact_with_Confirmed': ['Yes', 'Yes', 'No', 'No', 'Yes', 'Yes', 'No', 'Yes', 'No', 'Yes', 'No', 'No', 'No'],
+    'Test_Result': ['Positive', 'Positive', 'Negative', 'Negative', 'Positive', 'Positive', 'Positive', 'Positive', 'Negative', 'Positive', 'Positive', 'Positive', 'Positive']
+})
+
+# 3. Learn the parameters of the Bayesian network using maximum likelihood estimation
+# Note: You can pass the estimator class directly to the fit() method.
+model.fit(data, estimator=MaximumLikelihoodEstimator)
+
+# 4. Create an inference engine for the Bayesian network
+inference = VariableElimination(model)
+
+# 5. Define the evidence.
+# For example, suppose we want to know the probability of a positive test result given that:
+# - Fever is present,
+# - Cough is present,
+# - Difficulty breathing is present, and
+# - There has been contact with a confirmed case.
+evidence = {
+    'Fever': 'Yes',
+    'Cough': 'Yes',
+    'Difficulty_Breathing': 'Yes',
+    'Contact_with_Confirmed': 'Yes'
+}
+
+# 6. Calculate the probability of 'Test_Result' given the evidence.
+result = inference.query(variables=['Test_Result'], evidence=evidence)
+
+# 7. Print the result
+print("Probability distribution for Test_Result given the evidence:")
+print(result)
