@@ -1,0 +1,60 @@
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Dataset
+data = {
+    'Feature 1': [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5],
+    'Feature 2': [2.0, 1.8, 2.5, 3.0, 1.5, 4.0, 3.5, 5.0, 1.0],
+    'Target': [0, 1, 0, 1, 1, 1, 1, 0, 0]
+}
+
+# Convert to DataFrame
+df = pd.DataFrame(data)
+
+# Features and target
+X = df[['Feature 1', 'Feature 2']]
+y = df['Target']
+
+# Split into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Bagging Classifier with 10 Decision Trees
+bagging_model = BaggingClassifier(DecisionTreeClassifier(), n_estimators=10, random_state=42)
+bagging_model.fit(X_train, y_train)
+
+# AdaBoost Classifier with Decision Tree (max_depth=1)
+adaboost_model = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), n_estimators=50, random_state=42)
+adaboost_model.fit(X_train, y_train)
+
+# Predict using Bagging
+y_pred_bagging = bagging_model.predict(X_test)
+
+# Predict using AdaBoost
+y_pred_adaboost = adaboost_model.predict(X_test)
+
+# Displaying the output in a readable format for Bagging
+results_bagging = pd.DataFrame({
+    'Feature 1': X_test['Feature 1'],
+    'Feature 2': X_test['Feature 2'],
+    'True Target': y_test,
+    'Predicted Target (Bagging)': y_pred_bagging
+})
+
+# Displaying the output in a readable format for AdaBoost
+results_adaboost = pd.DataFrame({
+    'Feature 1': X_test['Feature 1'],
+    'Feature 2': X_test['Feature 2'],
+    'True Target': y_test,
+    'Predicted Target (AdaBoost)': y_pred_adaboost
+})
+
+# Print results
+print("Using BaggingClassifier with 10 Decision Trees on the dataset:")
+print(results_bagging)
+
+print("\nUsing AdaBoostClassifier with 50 Decision Trees on the dataset:")
+print(results_adaboost)
