@@ -1,0 +1,87 @@
+import matplotlib.pyplot as plt
+
+# Sample data
+x = [2,4,6,8,10]
+y = [5,10, 20, 25, 30,]
+colors = ['red']
+sizes = [50]
+
+# Create scatter plot
+plt.scatter(x, y, c=colors, s=sizes, alpha=0.7, edgecolors='black')
+
+# Add labels and title
+plt.xlabel('X-axis Label')
+plt.ylabel('Y-axis Label')
+plt.title('Scatter Plot Example')
+
+# Add grid
+plt.grid(True, linestyle='--', alpha=0.6)
+
+# Show plot
+plt.show()
+
+
+-------------------------------------------------------------------------------------------------------------
+
+import matplotlib.pyplot as plt
+
+# Sample data
+x = np.random.rand(50)
+y = np.random.rand(50)
+
+# Creating the scatter plot
+plt.scatter(x, y)
+
+# Adding labels and title
+plt.xlabel('Age (years)')
+plt.ylabel('BMI')
+plt.title('Scatter Plot: Age vs BMI')
+
+# Display the plot
+plt.show()
+
+------------------------------------------------------------------------------------------------------------
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Sample data
+x = np.random.rand(50)
+y = np.random.rand(50)
+colors = np.random.rand(50)
+
+# Create scatter plot
+plt.scatter(x, y, c=colors, cmap='viridis')
+plt.colorbar()  # Add colorbar to show color scale
+plt.show()
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+
+import matplotlib.pyplot as plt
+
+# Sample data (based on the image)
+study_hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+exam_scores = [50,55,60,65,70,75,80,85,90,95]
+# Create the scatter plot
+plt.scatter(study_hours, exam_scores, label='Data Points')
+
+# Add a trendline (optional)
+plt.plot(study_hours, exam_scores, 'r-', label='Trendline')
+
+# Add labels and title
+plt.xlabel('Study Hours')
+plt.ylabel('Exam Scores')
+plt.title('Study Hours vs Exam Scores')
+
+# Show the legend
+plt.legend()
+
+# Display the plot
+plt.show()
+
+
+
+-----------------------------------------------------------------------------------------------------
