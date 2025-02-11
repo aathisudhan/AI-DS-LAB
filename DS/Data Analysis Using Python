@@ -1,0 +1,219 @@
+# Program to find the sum and average of n integer numbers
+def calculate_sum_and_average(numbers):
+    total = sum(numbers)
+    average = total / len(numbers) if numbers else 0
+    return total, average
+
+# Example usage
+n = int(input("Enter the number of integers: "))
+numbers = []
+for i in range(n):
+    num = int(input(f"Enter integer {i+1}: "))
+    numbers.append(num)
+
+total, average = calculate_sum_and_average(numbers)
+print(f"Sum: {total}, Average: {average}")
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+# Program to find the sum and average of n integer numbers without using sum() function
+def calculate_sum_and_average(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    average = total / len(numbers) if numbers else 0
+    return total, average
+
+# Example usage
+n = int(input("Enter the number of integers: "))
+numbers = []
+for i in range(n):
+    num = int(input(f"Enter integer {i+1}: "))
+    numbers.append(num)
+
+total, average = calculate_sum_and_average(numbers)
+print(f"Sum: {total}, Average: {average}")
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+import math
+expenses = []
+n = int(input("Enter the number of days: "))
+for i in range(1, n + 1):
+    expense = float(input(f"Day {i} expense: "))
+    expenses.append(expense)
+
+total_expense = sum(expenses)
+average_expense = total_expense / n
+variance_expense = variance(expenses)
+std_dev_expense = standard_deviation(expenses)
+
+print("\nSAMPLE OUTPUT")
+print(f"The total expenses over {n} days is: ${total_expense:.2f}")
+print(f"The average daily expense is: ${average_expense:.2f}")
+if average_expense < 50:
+    print("Your spending is low.")
+elif average_expense <= 100:
+    print("Your spending is moderate.")
+else:
+    print("Your spending is high.")
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+import math
+
+# Function to calculate variance
+def variance(data):
+    n = len(data)
+    mean = sum(data) / n
+    variance_value = sum((x - mean) ** 2 for x in data) / n
+    return variance_value
+
+# Function to calculate standard deviation
+def standard_deviation(data):
+    variance_value = variance(data)
+    std_dev = math.sqrt(variance_value)
+    return std_dev
+
+# Main program
+data = []
+n = int(input("Enter the number of data points: "))
+for i in range(1, n + 1):
+    element = float(input(f"Enter data point {i}: "))
+    data.append(element)
+
+variance_value = variance(data)
+std_dev = standard_deviation(data)
+
+print("\nOUTPUT")
+print(f"The variance is: {variance_value:.2f}")
+print(f"The standard deviation is: {std_dev:.2f}")
+
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+import math
+
+# Function to calculate variance
+def variance(data):
+    n = len(data)
+    mean = sum(data) / n
+    variance_value = sum((x - mean) ** 2 for x in data) / n
+    return variance_value
+# Main program
+samples = int(input("Enter the number of samples: "))
+for sample_num in range(1, samples + 1):
+    print(f"\nSample {sample_num}:")
+    data = []
+    n = int(input("Enter the number of data points: "))
+    for i in range(1, n + 1):
+        element = float(input(f"Enter data point {i}: "))
+        data.append(element)
+
+    variance_value = variance(data)
+    std_dev = standard_deviation(data)
+
+    print(f"\nSample {sample_num} Results:")
+    print(f"The variance is: {variance_value:.2f}")
+
+
+
+-----------------------------------------------------------------------------------------------------------
+
+
+
+def calculate_variance(data):
+    # Step 2a: Calculate the mean
+    mean = sum(data) / len(data)
+
+    # Step 2b: Calculate the squared differences
+    squared_diff = [(x - mean) ** 2 for x in data]
+
+    # Step 2c: Calculate the variance
+    variance = sum(squared_diff) / len(data)
+
+    return variance
+
+
+def main():
+    # Step 8: Prompt the user to input a list of data points
+    data = list(map(int, input("Enter a list of numbers separated by spaces: ").split()))
+
+    # Step 9: Call the variance function
+    variance = calculate_variance(data)
+
+    # Step 10: Display the results
+    print(f"Data: {data}")
+    print(f"Variance: {variance:.2f}")
+
+
+# Step 11: Run the program
+if __name__ == "__main__":
+    main()
+
+
+----------------------------------------------------------------------------------------------------------
+
+
+import math
+
+def calculate_variance(data):
+    if len(data) == 0:
+        raise ValueError("The data list should not be empty.")
+    mean = sum(data) / len(data)
+
+    # Calculate the squared differences from the mean
+    squared_diff = [(x - mean) ** 2 for x in data]
+    # Calculate the variance
+    variance = sum(squared_diff) / len(data)
+    return variance
+
+def calculate_standard_deviation(variance):
+    return math.sqrt(variance)
+def main():
+    print("Welcome to the Temperature Variance and Standard Deviation Calculator!")
+    print("Please enter the temperature readings for the past 7 days (in °C):")
+
+    data = []
+    for i in range(1, 8):
+        temp = float(input(f"Day {i} Temperature: "))
+        data.append(temp)
+
+    try:
+        # Calculate variance
+        variance = calculate_variance(data)
+
+        # Calculate standard deviation
+        std_deviation = calculate_standard_deviation(variance)
+
+        # Display the results
+        print(f"\nTemperature Data: {data}")
+        print("\nAnalysis Result:")
+        print(f"Variance of Temperatures: {variance}")
+        print(f"Standard Deviation of Temperatures: {std_deviation}")
+
+        # Interpretation
+        if std_deviation < 2:
+            print("\nInterpretation:")
+            print("The temperature variation is low, the weather is quite stable.")
+        else:
+            print("\nInterpretation:")
+            print("The temperature variation is high, the weather is unstable.")
+    except ValueError as e:
+        print(e)
+
+if __name__ == "__main__":
+    main()
+
+
+------------------------------------------------------------------------------------------------------------
