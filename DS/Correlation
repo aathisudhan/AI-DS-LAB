@@ -1,0 +1,59 @@
+import numpy as np
+
+def pearson_correlation(x, y):
+    """Calculates the Pearson correlation coefficient between two arrays."""
+    return np.corrcoef(x, y)[0, 1]
+
+# Sample data
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([5, 4, 3, 2, 1])
+
+# Calculate and print the correlation coefficient
+correlation_coefficient = pearson_correlation(x, y)
+print("Correlation Coefficient:", correlation_coefficient)
+
+# Interpret the result
+if correlation_coefficient > 0:
+    print("There is a positive linear relationship between the variables.")
+elif correlation_coefficient < 0:
+    print("There is a negative linear relationship between the variables.")
+else:
+    print("There is no linear relationship between the variables.")
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+
+correlation_coefficient, p_value = pearsonr(x, y)
+
+
+# Adjusted datasets to create desired linear fit
+x = [1.0, 2.0, 3.0, 4.0, 5.0]
+y = [5.0, 4.0, 3.0, 2.0, 1.0]  # Adjusted to produce y = -1.00x + 6.00
+
+# Calculate correlation
+corr, p_value = calculate_correlation(x, y)
+
+# Print correlation result
+print("Pearson's correlation:", (corr, p_value))
+
+# Visualization
+plt.scatter(x, y, color='blue', label='Data points')
+plt.title("Scatter Plot and Pearson Correlation")
+plt.xlabel("Variable X")
+plt.ylabel("Variable Y")
+
+# Add linear regression line
+m, b = np.polyfit(x, y, 1)
+plt.plot(x, np.array(x)*m + b, color='red', label=f'Linear Fit: y = {m:.2f}x + {b:.2f}')
+
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+--------------------------------------------------------------------------------------------------------
