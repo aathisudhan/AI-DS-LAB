@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to hold process information
+struct Process {
+    int id;
+    int arrivalTime;
+    int burstTime;
+    int startTime;
+    int completionTime;
+    int waitingTime;
+    int turnaroundTime;
+};
+
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    // Allocate memory dynamically for process array
+    struct Process *processes = (struct Process *)malloc(n * sizeof(struct Process));
+
+    int totalWaitingTime = 0, totalTurnaroundTime = 0;
+
+    // Input process details
+    printf("Enter process details (arrival time and burst time):\n");
+    for (int i = 0; i < n; i++) {
+        processes[i].id = i + 1;
+        printf("Process ID: %d\n", processes[i].id);
+        printf("Arrival Time: ");
+        scanf("%d", &processes[i].arrivalTime);
+        printf("Burst Time: ");
+        scanf("%d", &processes[i].burstTime);
+    }
+
+    // Sort processes by arrival time (FCFS)
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (processes[i].arrivalTime > processes[j].arrivalTime) {
+                struct Process temp = processes[i];
+                processes[i] = processes[j];
+                processes[j] = temp;
+            }
+        }
+    }
+
+    // Calculate times for each process
+    int currentTime = 0;
+    for (int i = 0; i < n; i++) {
+        // If the process arrives after the current time, idle until it arrives
+        if (currentTime < processes[i].arrivalTime) {
+            currentTime = processes[i].arrivalTime;
+        }
+
+        // Set start time and completion time
+        processes[i].startTime = currentTime;
+        processes[i].completionTime = currentTime + processes[i].burstTime;
+
+        // Calculate waiting time and turnaround time
+        processes[i].waitingTime = processes[i].startTime - processes[i].arrivalTime;
+        processes[i].turnaroundTime = processes[i].completionTime - processes[i].arrivalTime;
+
+        // Update total times
+        totalWaitingTime += processes[i].waitingTime;
+        totalTurnaroundTime += processes[i].turnaroundTime;
+
+        // Move current time forward
+        currentTime = processes[i].completionTime;
+    }
+
+    // Output results in a formatted table
+    printf("\nProcess ID  Arrival Time  Burst Time  Start Time  Completion Time  Waiting Time  Turnaround Time\n");
+    printf("----------------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < n; i++) {
+        printf("    %d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n",
+               processes[i].id,
+               processes[i].arrivalTime,
+               processes[i].burstTime,
+               processes[i].startTime,
+               processes[i].completionTime,
+               processes[i].waitingTime,
+               processes[i].turnaroundTime);
+    }
+
+    // Calculate and display averages
+    printf("\nAverage Waiting Time: %.2f\n", (float)totalWaitingTime / n);
+    printf("Average Turnaround Time: %.2f\n", (float)totalTurnaroundTime / n);
+
+    // Free dynamically allocated memory
+    free(processes);
+
+    return 0;
+}
