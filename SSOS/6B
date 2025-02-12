@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Function to convert hexadecimal string to integer
+int hexToInt(const char *hexStr) {
+    return (int)strtol(hexStr, NULL, 16);
+}
+
+// Function to convert integer to hexadecimal string
+void intToHex(int value, char *hexStr, int width) {
+    sprintf(hexStr, "%0*X", width, value);
+}
+
+// Function to parse the header record
+void parseHeader(char *headerRecord, char *programName, int *startAddress, int *length) {
+    char *token = strtok(headerRecord, "^"); 
+    strcpy(programName, token);  // Extract program name
+    
+    token = strtok(NULL, "^");
+    *startAddress = hexToInt(token); // Extract starting address
+    
+    token = strtok(NULL, "^");
+    *length = hexToInt(token); // Extract program length
+}
+
+// Function to parse a text record and update memory map
+void parseText(char *textRecord, int relocationFactor, char memoryMap[][2][20], int *mapSize) {
+    char *token = strtok(textRecord, "^");
+    int address = hexToInt(token) + relocationFactor;  // Extract and relocate address
+
+    token = strtok(NULL, "^");
+    int length = hexToInt(token); // Extract text record length
+
+    token = strtok(NULL, "^"); // Extract object code
+    for (int i = 0; i < length / 6; ++i) {
+        char relocatedAddress[20];
+        intToHex(address + (i * 3), relocatedAddress, 6); // Relocate address
+
+        snprintf(memoryMap[*mapSize][0], 20, "%s", relocatedAddress); // Store address
+        snprintf(memoryMap[*mapSize][1], 20, "%.*s", 6, token + i * 6); // Store object code
+        (*mapSize)++;
+    }
+}
+
+// Function to display the memory map
+void displayMemoryMap(char memoryMap[][2][20], int mapSize) {
+    printf("\nRelocated Memory Map\n");
+    printf("Address\tRelocated Object Code\n");
+    for (int i = 0; i < mapSize; ++i) {
+        printf("%s\t%s\n", memoryMap[i][0], memoryMap[i][1]);
+    }
+}
+
+int main() {
+    // Input data (Using ^ as delimiter)
+    int relocationFactor = 0x1000;  // Relocation factor (hexadecimal)
+    char input[] = "H^PROG1^000020^00006C "
+                   "T^000020^1E^1410332810303C0003 "
+                   "T^00003E^0C^001036481039 "
+                   "T^00004A^18^12103C4C0000 "
+                   "E^000020";
+
+    char programName[20], memoryMap[100][2][20];
+    int startAddress = 0, length = 0, mapSize = 0;
+    
+    // Parse input records
+    char *record = strtok(input, " ");
+    while (record != NULL) {
+        if (record[0] == 'H') {
+            // Header record
+            parseHeader(record + 2, programName, &startAddress, &length);
+        } else if (record[0] == 'T') {
+            // Text record
+            parseText(record + 2, relocationFactor, memoryMap, &mapSize);
+        } else if (record[0] == 'E') {
+            // End record (Extract execution start address if provided)
+            if (strlen(record) > 2) {
+                startAddress = hexToInt(record + 2) + relocationFactor;
+            }
+        }
+        record = strtok(NULL, " ");
+    }
+
+    // Display the relocated memory map
+    displayMemoryMap(memoryMap, mapSize);
+
+    // Display relocated execution start address
+    printf("\nStarting Execution Address (Relocated)\n");
+    char relocatedStartAddress[20];
+    intToHex(startAddress, relocatedStartAddress, 6);
+    printf("%s\n", relocatedStartAddress);
+
+    // Display relocation factor applied
+    printf("\nRelocation Factor Applied\n");
+    printf("+%X\n", relocationFactor);
+
+    return 0;
+}
