@@ -1,0 +1,17 @@
+1. Java Tokens - Comments, Identifiers, Keywords, Separators, Data types
+2. Scoping and Parameter passing (by value & by reference)
+3. Flow Control Statements
+4. Arrays and Var-arg types
+5. Operators & their Precedence & Associativity
+6. Conversions: Narrowing & Widening Conversions
+7. Access Modifiers for Class & Class Members
+8. Non Access Modifiers for Class & Class Members
+9. Packages with Static imports
+10. Creating Classes and Instances
+11. Method and Types of methods
+12. Inheritance
+13. Polymorphism (Method Overloading & Overriding) Abstract classes and Interfaces
+14. Constructors and Initialization
+15. Static data and methods
+16. Exception Handling Framework - User defined Exceptions
+17. Java Thread Model
