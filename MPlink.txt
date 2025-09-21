@@ -1,1 +1,89 @@
 https://drive.google.com/drive/folders/1KuefCIS0Fsp9SCwak2kRUsujoH2GMJW1      KEIS
+
+# -----------------------------------------------
+# Personalized Meal Recommendation System
+# Fully Dynamic | No External Files Needed
+# -----------------------------------------------
+
+def get_meals_from_user():
+    print("🍴 Welcome! Enter your meal data first.")
+    num_meals = int(input("How many meals do you want to enter? "))
+    meals = []
+
+    for i in range(num_meals):
+        print(f"\nEnter details for Meal {i + 1}:")
+        name = input("Meal name: ").strip()
+        ingredients = input("Ingredients (comma-separated): ").lower().split(',')
+        calories = int(input("Calories (kcal): "))
+        protein = int(input("Protein (grams): "))
+        allergens = input("Allergens (comma-separated, leave blank if none): ").lower().split(',')
+        category = input("Category (Low-Calorie / High-Calorie / Balanced): ").strip()
+
+        meals.append({
+            "name": name,
+            "ingredients": [x.strip() for x in ingredients],
+            "calories": calories,
+            "protein": protein,
+            "allergens": [x.strip() for x in allergens if x.strip()],
+            "category": category
+        })
+    return meals
+
+def get_user_preferences():
+    print("\n👤 Enter your personal preferences:")
+    dietary_restrictions = input("Dietary restrictions (comma-separated, leave blank if none): ").lower().split(',')
+    dietary_restrictions = [x.strip() for x in dietary_restrictions if x.strip()]
+
+    health_goal = input("Health goal (Weight Loss / Muscle Gain / Balanced Diet): ").strip().lower()
+
+    available_ingredients = input("Available ingredients (comma-separated): ").lower().split(',')
+    available_ingredients = [x.strip() for x in available_ingredients if x.strip()]
+
+    return dietary_restrictions, health_goal, available_ingredients
+
+def recommend_meals(meals, restrictions, goal, available_ingredients):
+    goal_category_map = {
+        "weight loss": "Low-Calorie",
+        "muscle gain": "High-Calorie",
+        "balanced diet": "Balanced"
+    }
+
+    recommended = []
+
+    for meal in meals:
+        # 1️⃣ Exclude meals with allergens
+        if any(allergy in meal['allergens'] for allergy in restrictions):
+            continue
+
+        # 2️⃣ Match meals by category according to user's goal
+        if goal_category_map.get(goal) != meal['category']:
+            continue
+
+        # 3️⃣ Ensure at least 50% of ingredients are available
+        matched_ingredients = [ing for ing in meal['ingredients'] if ing in available_ingredients]
+        if len(matched_ingredients) / len(meal['ingredients']) < 0.5:
+            continue
+
+        recommended.append(meal)
+
+    return recommended
+
+def display_recommendations(recommended_meals):
+    print("\n🍽️ Recommended Meals for You:\n")
+
+    if recommended_meals:
+        for m in recommended_meals:
+            print(f"✅ {m['name']} ({m['category']})")
+            print(f"   Ingredients: {', '.join(m['ingredients'])}")
+            print(f"   Calories: {m['calories']} kcal | Protein: {m['protein']} g\n")
+    else:
+        print("❌ No meals matched your criteria. Try adjusting inputs or adding more ingredients.\n")
+
+def main():
+    meals = get_meals_from_user()
+    restrictions, goal, available_ingredients = get_user_preferences()
+    recommendations = recommend_meals(meals, restrictions, goal, available_ingredients)
+    display_recommendations(recommendations)
+
+if __name__ == "__main__":
+    main()
